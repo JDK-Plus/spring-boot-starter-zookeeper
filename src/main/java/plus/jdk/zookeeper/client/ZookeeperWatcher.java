@@ -3,7 +3,6 @@ package plus.jdk.zookeeper.client;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.WatchedEvent;
 import plus.jdk.zookeeper.common.ZkClientException;
 
@@ -17,7 +16,6 @@ public class ZookeeperWatcher implements Watcher, AsyncCallback.ChildrenCallback
     private final ZookeeperClient zookeeperClient;
 
     private final Semaphore connLock;
-
 
     public ZookeeperWatcher(Semaphore connLock, ZookeeperClient zookeeperClient) {
         this.zookeeperClient = zookeeperClient;
@@ -60,10 +58,6 @@ public class ZookeeperWatcher implements Watcher, AsyncCallback.ChildrenCallback
         }
     }
 
-
-    /**
-     * 重置会话信息
-     */
     private void resetSession() {
         log.warn("Zookeeper session timeout......");
         try {
@@ -80,11 +74,7 @@ public class ZookeeperWatcher implements Watcher, AsyncCallback.ChildrenCallback
      * @param path
      */
     private void dataChange(String path) {
-        try {
-//            process.dataChange(path);
-        } catch (ZkClientException e) {
-            log.error("Data change watcher exception. {}", e);
-        }
+
     }
 
     /**
@@ -93,11 +83,7 @@ public class ZookeeperWatcher implements Watcher, AsyncCallback.ChildrenCallback
      * @param path
      */
     private void childChange(String path) {
-        try {
-//            process.childChange(path, false);
-        } catch (ZkClientException e) {
-            log.error("Child change watcher exception.", e);
-        }
+
     }
 
     /**
@@ -106,15 +92,6 @@ public class ZookeeperWatcher implements Watcher, AsyncCallback.ChildrenCallback
      * @param state
      */
     private void stateChange(Watcher.Event.KeeperState state) {
-//        process.listen(state);
     }
 
-    /**
-     * 添加zookeeper事件处理类
-     *
-     * @param process
-     */
-//    public void setWatcherProcess(WatcherProcess process) {
-//        this.process = process;
-//    }
 }

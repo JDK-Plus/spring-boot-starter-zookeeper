@@ -7,6 +7,7 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.Stat;
 import plus.jdk.zookeeper.common.ZkClientException;
+import plus.jdk.zookeeper.config.ZookeeperProperties;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,24 +17,9 @@ import java.util.concurrent.Semaphore;
 @Data
 public class ZookeeperClient {
 
-    /**
-     * zookeeper主机列表
-     */
-    private final String hosts;
-
-    /**
-     * 会话超时时间 会话超时时间
-     */
-    private int sessionTimeout = 3000;
-
-    /**
-     * 连接超时时间
-     */
-    private final int connTimeout;
-
-    private final int watcherThreadSize;
-
     private IZKDataAdapter dataAdapter;
+
+    private ZookeeperProperties properties;
 
     /**
      * 连接同步锁
@@ -44,13 +30,11 @@ public class ZookeeperClient {
 
     private ZooKeeper zooKeeper;
 
-    public ZookeeperClient(String hosts, int sessionTimeout, int connTimeout, int watcherThreadSize) {
-        this.hosts = hosts;
-        this.sessionTimeout = sessionTimeout;
-        this.connTimeout = connTimeout;
-        this.watcherThreadSize = watcherThreadSize;
+    public ZookeeperClient(ZookeeperProperties zookeeperProperties) {
         this.dataAdapter = new DefaultZKDataAdapter();
-        watcher = new ZookeeperWatcher(connLock, this);
+        this.properties = zookeeperProperties;
+        this.watcher = new ZookeeperWatcher(connLock, this);
+        this.connection();
     }
 
     public <T> T getData(String path, Class<T> clazz) throws ZkClientException {
@@ -123,13 +107,14 @@ public class ZookeeperClient {
 
     private synchronized void connection() throws ZkClientException {
         if (this.checkConnection()) {
-            throw new ZkClientException("Has been connected to the server, please do not repeat connection. host:" + hosts);
+            throw new ZkClientException("Has been connected to the server, please do not repeat connection. host:"
+                    + properties.getHosts());
         }
         try {
             connLock.drainPermits();
-            zooKeeper = new ZooKeeper(hosts, sessionTimeout, watcher);
+            zooKeeper = new ZooKeeper(properties.getHosts(), properties.getSessionTimeout(), watcher);
         } catch (IOException e) {
-            throw new ZkClientException("Connect zookeeper fail, hosts=" + hosts, e);
+            throw new ZkClientException("Connect zookeeper fail, hosts=" + properties.getHosts(), e);
         }
     }
 
@@ -166,12 +151,12 @@ public class ZookeeperClient {
 
     public boolean checkStatus() throws ZkClientException {
         if (zooKeeper == null) {
-            throw new ZkClientException("Not connected to the zookeeper server,host=" + hosts + ",invoking this.connect().");
+            throw new ZkClientException("Not connected to the zookeeper server,host=" + properties.getHosts() + ",invoking this.connect().");
         }
         if (zooKeeper.getState().isAlive()) {
             return true;
         }
-        throw new ZkClientException("Not connected to the zookeeper server,host=" + hosts + ",state: " + zooKeeper.getState());
+        throw new ZkClientException("Not connected to the zookeeper server,host=" + properties.getHosts() + ",state: " + zooKeeper.getState());
     }
 
     public boolean isConnection() {
@@ -179,10 +164,11 @@ public class ZookeeperClient {
     }
 
     public static void main(String[] args) {
-        String hosts = "10.185.10.65:12181";
-        ZookeeperClient zookeeperClient = new ZookeeperClient(hosts, 3000, 3000, 1);
-        zookeeperClient.connection();
-        String data = zookeeperClient.getData("/brand/test1", String.class);
+        String hosts = "127.0.0.1:12181";
+        ZookeeperProperties properties = new ZookeeperProperties();
+        properties.setHosts(hosts);
+        ZookeeperClient zookeeperClient = new ZookeeperClient(properties);
+        String data = zookeeperClient.getData("/test1", String.class);
         log.info("{}", data);
     }
 }
