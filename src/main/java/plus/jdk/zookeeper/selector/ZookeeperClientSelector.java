@@ -9,6 +9,7 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import plus.jdk.zookeeper.annotation.EnableZookeeperClient;
 import plus.jdk.zookeeper.client.ZookeeperClientFactory;
+import plus.jdk.zookeeper.common.SpringZookeeperContext;
 import plus.jdk.zookeeper.config.ZookeeperProperties;
 import plus.jdk.zookeeper.global.ZookeeperClientBeanPostProcessor;
 
@@ -27,6 +28,11 @@ public class ZookeeperClientSelector extends WebApplicationObjectSupport impleme
     @Bean
     ZookeeperClientFactory getZookeeperClientFactory(ZookeeperProperties properties) {
         return new ZookeeperClientFactory(properties, beanFactory, getApplicationContext());
+    }
+
+    @Bean
+    SpringZookeeperContext getSpringContext() {
+        return new SpringZookeeperContext();
     }
 
     @Override

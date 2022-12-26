@@ -2,6 +2,7 @@ package plus.jdk.zookeeper.client;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
@@ -42,6 +43,16 @@ public class ZookeeperClient {
     }
 
     public <T> T getData(String path, boolean watcher, Class<T> clazz) throws ZkClientException {
+        this.checkStatus();
+        try {
+            byte[] dataBytes = this.zooKeeper.getData(path, watcher, null);
+            return dataAdapter.deserialize(dataBytes, clazz);
+        } catch (Exception e) {
+            throw new ZkClientException("getData node " + path, e);
+        }
+    }
+
+    public <T> T getData(String path, Class<T> clazz, Watcher watcher) throws ZkClientException {
         this.checkStatus();
         try {
             byte[] dataBytes = this.zooKeeper.getData(path, watcher, null);

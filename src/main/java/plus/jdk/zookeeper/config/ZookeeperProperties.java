@@ -28,9 +28,4 @@ public class ZookeeperProperties {
      * 连接超时时间
      */
     private int connTimeout = 3000;
-
-    /**
-     * watcher数量
-     */
-    private int watcherThreadSize = 1;
 }

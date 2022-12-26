@@ -8,10 +8,11 @@ import plus.jdk.zookeeper.common.ZkClientException;
 
 import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 
 @Slf4j
-public class ZookeeperWatcher implements Watcher, AsyncCallback.ChildrenCallback{
+public class ZookeeperWatcher implements Watcher, AsyncCallback.ChildrenCallback {
 
     private final ZookeeperClient zookeeperClient;
 
@@ -43,9 +44,11 @@ public class ZookeeperWatcher implements Watcher, AsyncCallback.ChildrenCallback
                 break;
             case Disconnected://连接断开
                 this.stateChange(event.getState());
+                resetSession();
                 log.warn("Zookeeper connection break......");
                 break;
             default:
+                resetSession();
                 log.warn("Zookeeper state: " + event.getState());
                 break;
         }
@@ -59,13 +62,20 @@ public class ZookeeperWatcher implements Watcher, AsyncCallback.ChildrenCallback
     }
 
     private void resetSession() {
-        log.warn("Zookeeper session timeout......");
-        try {
-            zookeeperClient.reconnection();
-            log.warn("Zookeeper session timeout,retry success. ");
-        } catch (ZkClientException e) {
-            log.error("Zookeeper reset session faiil.", e);
+        log.warn("Zookeeper session timeout, reconnecting......");
+        while (!zookeeperClient.isConnection()) {
+            try {
+                try{
+                    zookeeperClient.close();
+                }catch (Exception | Error ignored) {}
+                zookeeperClient.reconnection();
+                TimeUnit.SECONDS.sleep(2);
+            } catch (Exception | Error e) {
+                log.error("zookeeper reconnect failed, msg:{}, properties:{}", e.getMessage(), zookeeperClient.getProperties());
+            }
         }
+        ZookeeperClientFactory.reRegisterBeanFieldZKNodeDataWatcher();
+        log.warn("Zookeeper session timeout, reconnect success......");
     }
 
     /**

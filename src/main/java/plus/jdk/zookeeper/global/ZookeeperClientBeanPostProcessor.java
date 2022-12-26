@@ -1,5 +1,7 @@
 package plus.jdk.zookeeper.global;
 
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -32,15 +34,19 @@ public class ZookeeperClientBeanPostProcessor implements BeanPostProcessor {
             }
             ReflectionUtils.makeAccessible(field);
             ReflectionUtils.setField(field, bean,
-                    processInjectionPoint(field.getType(), annotation));
+                    processInjectionPoint(field, bean, field.getType(), annotation));
         }
         return bean;
     }
 
 
-    protected <T>
-    T processInjectionPoint(final Class<T> injectionType,
-                            final ZookeeperNode zookeeperNode) {
-        return zookeeperClientFactory.getZooNodeData(zookeeperNode, injectionType);
+    protected <T> T processInjectionPoint(final Field field, final Object bean,
+                                          final Class<T> injectionType, final ZookeeperNode zookeeperNode) {
+        return zookeeperClientFactory.distributeZKNodeDataForBeanField(zookeeperNode, injectionType, new Watcher() {
+            @Override
+            public void process(WatchedEvent event) {
+                zookeeperClientFactory.distributeZKNodeDataForBeanField(zookeeperNode, injectionType, this, bean, field);
+            }
+        }, bean, field);
     }
 }
