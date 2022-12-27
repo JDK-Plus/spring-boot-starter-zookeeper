@@ -32,21 +32,8 @@ public class ZookeeperClientBeanPostProcessor implements BeanPostProcessor {
             if (annotation == null) {
                 continue;
             }
-            ReflectionUtils.makeAccessible(field);
-            ReflectionUtils.setField(field, bean,
-                    processInjectionPoint(field, bean, field.getType(), annotation));
+            zookeeperClientFactory.processInjectionPoint(field, bean, field.getType(), annotation);
         }
         return bean;
-    }
-
-
-    protected <T> T processInjectionPoint(final Field field, final Object bean,
-                                          final Class<T> injectionType, final ZookeeperNode zookeeperNode) {
-        return zookeeperClientFactory.distributeZKNodeDataForBeanField(zookeeperNode, injectionType, new Watcher() {
-            @Override
-            public void process(WatchedEvent event) {
-                zookeeperClientFactory.distributeZKNodeDataForBeanField(zookeeperNode, injectionType, this, bean, field);
-            }
-        }, bean, field);
     }
 }

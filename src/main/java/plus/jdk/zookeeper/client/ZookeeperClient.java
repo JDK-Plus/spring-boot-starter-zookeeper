@@ -11,6 +11,7 @@ import plus.jdk.zookeeper.common.ZkClientException;
 import plus.jdk.zookeeper.config.ZookeeperProperties;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
@@ -38,11 +39,11 @@ public class ZookeeperClient {
         this.connection();
     }
 
-    public <T> T getData(String path, Class<T> clazz) throws ZkClientException {
+    public <T> T getData(String path, Type clazz) throws ZkClientException {
         return getData(path, false, clazz);
     }
 
-    public <T> T getData(String path, boolean watcher, Class<T> clazz) throws ZkClientException {
+    public <T> T getData(String path, boolean watcher, Type clazz) throws ZkClientException {
         this.checkStatus();
         try {
             byte[] dataBytes = this.zooKeeper.getData(path, watcher, null);
@@ -52,7 +53,7 @@ public class ZookeeperClient {
         }
     }
 
-    public <T> T getData(String path, Class<T> clazz, Watcher watcher) throws ZkClientException {
+    public <T> T getData(String path, Type clazz, Watcher watcher) throws ZkClientException {
         this.checkStatus();
         try {
             byte[] dataBytes = this.zooKeeper.getData(path, watcher, null);
@@ -175,11 +176,11 @@ public class ZookeeperClient {
     }
 
     public static void main(String[] args) {
-        String hosts = "127.0.0.1:12181";
+        String hosts = "10.185.10.65:12181";
         ZookeeperProperties properties = new ZookeeperProperties();
         properties.setHosts(hosts);
         ZookeeperClient zookeeperClient = new ZookeeperClient(properties);
-        String data = zookeeperClient.getData("/test1", String.class);
+        String data = zookeeperClient.getData("/brand/grpc/name/provider", String.class);
         log.info("{}", data);
     }
 }

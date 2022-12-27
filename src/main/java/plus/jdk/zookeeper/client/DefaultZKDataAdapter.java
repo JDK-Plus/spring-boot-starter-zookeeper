@@ -2,6 +2,7 @@ package plus.jdk.zookeeper.client;
 
 import com.google.gson.Gson;
 
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 
 public class DefaultZKDataAdapter implements IZKDataAdapter {
@@ -14,7 +15,7 @@ public class DefaultZKDataAdapter implements IZKDataAdapter {
     }
 
     @Override
-    public <T> T deserialize(byte[] dataBytes, Class<T> clazz) {
+    public <T> T deserialize(byte[] dataBytes, Type clazz) {
         return gson.fromJson(new String(dataBytes), clazz);
     }
 }

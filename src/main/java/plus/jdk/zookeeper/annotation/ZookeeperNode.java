@@ -9,6 +9,7 @@ public @interface ZookeeperNode {
 
     /**
      * zookeeper节点路径
+     * @return zookeeper path
      */
     String value();
 }

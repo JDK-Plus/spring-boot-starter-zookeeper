@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
 @NoArgsConstructor
-@ConfigurationProperties(prefix = "plus.jdk.grpc")
+@ConfigurationProperties(prefix = "plus.jdk.zookeeper")
 public class ZookeeperProperties {
 
     /**
@@ -22,10 +22,20 @@ public class ZookeeperProperties {
     /**
      * 会话超时时间 会话超时时间
      */
-    private int sessionTimeout = 3000;
+    private Integer sessionTimeout = 3000;
 
     /**
      * 连接超时时间
      */
-    private int connTimeout = 3000;
+    private Integer connTimeout = 3000;
+
+    /**
+     * 监听者线程池核心线程数
+     */
+    private Integer watcherThreadCorePollSize = 10;
+
+    /**
+     * 刷新周期，默认30秒
+     */
+    private Integer heartRate = 30;
 }

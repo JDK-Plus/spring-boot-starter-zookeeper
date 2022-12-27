@@ -7,14 +7,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import plus.jdk.zookeeper.annotation.EnableZookeeperClient;
 import plus.jdk.zookeeper.client.ZookeeperClientFactory;
 import plus.jdk.zookeeper.common.SpringZookeeperContext;
 import plus.jdk.zookeeper.config.ZookeeperProperties;
 import plus.jdk.zookeeper.global.ZookeeperClientBeanPostProcessor;
 
 @Configuration
-@EnableZookeeperClient
 public class ZookeeperClientSelector extends WebApplicationObjectSupport implements BeanFactoryAware, WebMvcConfigurer {
 
     private BeanFactory beanFactory;

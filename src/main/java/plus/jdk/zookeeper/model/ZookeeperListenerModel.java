@@ -6,10 +6,11 @@ import org.apache.zookeeper.Watcher;
 import plus.jdk.zookeeper.annotation.ZookeeperNode;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 @Data
 @AllArgsConstructor
-public class ZookeeperListenerModel<T> {
+public class ZookeeperListenerModel {
 
     /**
      * 字段注解
@@ -29,10 +30,19 @@ public class ZookeeperListenerModel<T> {
     /**
      * 字段类型
      */
-    private Class<T> clazz;
+    private Type clazz;
 
     /**
      * 用的哪个监听器
      */
     private Watcher watcher;
+
+    /**
+     * 是否已提交任务
+     */
+    private Boolean hasTiming  = false;
+
+    public String id() {
+        return String.format("%d-%d", beanInstance.hashCode(), field.hashCode());
+    }
 }
