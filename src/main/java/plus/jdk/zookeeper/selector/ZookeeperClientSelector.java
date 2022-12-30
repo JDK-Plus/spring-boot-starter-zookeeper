@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import plus.jdk.zookeeper.client.DefaultZKDataAdapter;
 import plus.jdk.zookeeper.client.ZookeeperClientFactory;
 import plus.jdk.zookeeper.common.SpringZookeeperContext;
 import plus.jdk.zookeeper.config.ZookeeperProperties;
@@ -31,6 +32,11 @@ public class ZookeeperClientSelector extends WebApplicationObjectSupport impleme
     @Bean
     SpringZookeeperContext getSpringContext() {
         return new SpringZookeeperContext();
+    }
+
+    @Bean
+    DefaultZKDataAdapter getDefaultZKDataAdapter() {
+        return new DefaultZKDataAdapter();
     }
 
     @Override

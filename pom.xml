@@ -6,7 +6,7 @@
 
     <groupId>plus.jdk.zookeeper</groupId>
     <artifactId>spring-boot-starter-zookeeper</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <name>spring-boot-starter-zookeeper</name>
     <description>spring-boot-starter-zookeeper</description>

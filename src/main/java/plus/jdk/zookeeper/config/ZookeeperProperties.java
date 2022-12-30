@@ -3,6 +3,8 @@ package plus.jdk.zookeeper.config;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import plus.jdk.zookeeper.client.DefaultZKDataAdapter;
+import plus.jdk.zookeeper.client.IZKDataAdapter;
 
 @Data
 @NoArgsConstructor
@@ -38,4 +40,9 @@ public class ZookeeperProperties {
      * 刷新周期，默认30秒
      */
     private Integer heartRate = 30;
+
+    /**
+     * 指定默认的数据序列化、反序列化工具类
+     */
+    private Class<? extends IZKDataAdapter> dataAdapter = DefaultZKDataAdapter.class;
 }

@@ -7,6 +7,8 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.Stat;
+import org.springframework.context.ApplicationContext;
+import plus.jdk.zookeeper.common.SpringZookeeperContext;
 import plus.jdk.zookeeper.common.ZkClientException;
 import plus.jdk.zookeeper.config.ZookeeperProperties;
 
@@ -58,6 +60,16 @@ public class ZookeeperClient {
         try {
             byte[] dataBytes = this.zooKeeper.getData(path, watcher, null);
             return dataAdapter.deserialize(dataBytes, clazz);
+        } catch (Exception e) {
+            throw new ZkClientException("getData node " + path, e);
+        }
+    }
+
+    public <T> T getData(String path, Type clazz, Watcher watcher, IZKDataAdapter adapter) throws ZkClientException {
+        this.checkStatus();
+        try {
+            byte[] dataBytes = this.zooKeeper.getData(path, watcher, null);
+            return adapter.deserialize(dataBytes, clazz);
         } catch (Exception e) {
             throw new ZkClientException("getData node " + path, e);
         }

@@ -69,8 +69,10 @@ public class ZookeeperClientFactory implements SmartLifecycle {
 
     protected <T> void synchronizeDataFromZookeeper(ZookeeperListenerModel listenerModel) {
         try {
+            ZookeeperNode zookeeperNode = listenerModel.getZookeeperNode();
             T data = zookeeperClient.getData(listenerModel.getZookeeperNode().value(),
-                    listenerModel.getClazz(), listenerModel.getWatcher());
+                    listenerModel.getClazz(), listenerModel.getWatcher(),
+                    configurableBeanFactory.getBean(zookeeperNode.adapter()));
             ReflectionUtils.makeAccessible(listenerModel.getField());
             ReflectionUtils.setField(listenerModel.getField(), listenerModel.getBeanInstance(), data);
         } catch (Exception | Error e) {
